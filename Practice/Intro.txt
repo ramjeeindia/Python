@@ -1,0 +1,77 @@
+	
+	    1.BIG DATAData Engineer		
+DATA	2.DATA SCIENCE			
+	    3.DATA ANALYTICS	DATA/BUSINESS ANALTYICS		
+				
+				
+BIG DATA -Big data primarily refers to data sets that are too large or complex	
+>>>>>>>>>>>>>>>		
+Hadoop-	Apache Hadoop software library is a framework that allows for the distributed processing of large data sets across clusters of computers using simple programming models,Alernative like Cloudera, Hortonworks, AWS (AMR)	
+
+Hive-	A data warehouse infrastructure that provides data summarization and ad hoc querying.WORKS ON TOP OF HADOOP	
+
+Hbase-	A scalable, distributed database that supports structured data storage for large tables	
+
+Spark-	Processing Engine .A fast and general compute engine for Hadoop data. Spark provides a simple and expressive programming model that supports a wide range of applications, including ETL, machine learning, stream processing, and graph computation.	
+
+Kafka-Messaging System.Apache Kafka is a distributed event store and stream-processing platform. It is an open-source system developed by the Apache Software Foundation written in Java and Scala. The project aims to provide a unified, high-throughput, low-latency platform for handling real-time data feeds.		
+
+Oozie-Apache Oozie is a server-based workflow scheduling system to manage Hadoop jobs.Xml based system, Alernative Airflow		
+
+Sqoop-Sqoop is a command-line interface application for transferring data between relational databases and Hadoop.	
+
+			
+zookepper-	Feedback system or maintain a session .Apache ZooKeeper is an open-source server for highly reliable distributed coordination of cloud applications.
+
+Programming Language< Java , Scala, Python		
+
+DSA	- Data Structures and Algorithms			
+SQL	- Structured Query Language			
+Cloud				
+Ops	auto scaling				
+
+###############################################################################            	
+HDFS	Hadoop Distributed File System			
+GDFS	GOOGLE DISTRIBUTED FILE SYSTEM			
+GCP	Google Cloud Platform			
+ETL	Extract Transform and Load			
+
+#################################################################################				
+DATA SCIENCE	
+
+Programming Language< Java , Scala, Python				
+DSA	FOR PRODUCT BASE SOFTWARE/COMPANY			
+SQL				
+Math				
+ML -	Machine Learning			
+DL -	Deep Learning			
+CV -	Computer Vision			
+NLP	- Natural Language Processing			
+RL-	Reinforcement Learning			
+OPS -	ML/DL Operational			
+CLOUD-	AWS , AZURE, GCP			
+				
+####################################################################################				
+DATA ANALYTICS				
+SQL				
+Python				
+Dashboard	POWER BI, TABLEU, QULICK			
+Excel				
+Stats				
+ML	Machine Learning Overview 			
+				
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++				
+types  of data 				
+.csv				
+.pdf				
+.xml				
+.json/.yaml				
+.mp4/.mp3				
+.jpeg/.png				
+oracle/javascripts				
+.txt				
+				
+Data is like a crude oil. We can define according to ypes of data and choose sturactural means a data like schema/dbo/ table like SQL, ORACLE types and non-structural like pdf, jpg				
+and semi structure means having schema but flow all types of data like facebook data , linkedin , whatsapp				
+
+
