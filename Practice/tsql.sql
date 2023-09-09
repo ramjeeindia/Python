@@ -1,0 +1,122 @@
+SELECT  CONVERT(VARCHAR,OINV.DOCDATE,103)DOCDATE,OINV.CARDCODE,INV1.LineNum, oinv.DocRate ,
+inv1.VisOrder+1 num,
+-ROW_NUMBER() OVER (partition by  INV1.LineNum order by INV1.LineNum  asc) AS Row#,
+CASE WHEN Convert(Varchar(Max),OINV.GSTTranTyp)='GA' THEN Convert(Varchar(Max),'TAX INVOICE')
+WHEN Convert(Varchar(Max),OINV.GSTTranTyp)='GD' THEN Convert(Varchar(Max),'DEBIT NOTE')
+Else 'BILL OF SUPPLY' END  GSTTRANTYP,OCRY.NAME 'CONTRYNAM',
+OINV.DOCNUM,OINV.CARDNAME,ISNULL(CRD1.STREET,'')+'  '+ISNULL(CRD1.BLOCK,'')+'  '+  
+ISNULL(CRD1.CITY,'')+' - '+ISNULL(CRD1.ZIPCODE,'')  AS ADDRESS ,CRD1.ADDRESS AS ADD1, 
+OINV.NUMATCARD,OINV.TRNSPCODE AS SHIPAD,OINV.DOCENTRY,INV1.ITEMCODE, oinv.RevRefDate, oinv.RevRefNo,
+(CASE WHEN INV1.CURRENCY = 'INR' THEN isnull((INV1.LineTotal),0)ELSE isnull((INV1.TotalFrgn),0) END ) as VATSUM,
+OINV.DISCSUM,INV1.QUANTITY,OCRD.SHIPTODEF,isnull(OINV.DOCTOTAL,0) DOCTOTAL,
+INV1.DSCRIPTIOn, case when inv1.Currency= 'INR' THEN INV1.PriceBefDi 
+when inv1.Currency!= 'INR' THEN (INV1.Rate*inv1.PriceBefDi) end as "Unit Price INR",
+INV12.CityS aS 'ShipCity',
+ISNULL((SELECT TOP 1 ISNULL(TAXRATE,0) FROM INV4 WHERE  INV4.DOCENTRY =  INV1.DOCENTRY AND INV4.STATYPE   IN ('-100') AND INV4.RELATETYPE = 1 and INV4.LINENUM=INV1.LINENUM) ,0) AS CGSTRATE, 
+ISNULL((SELECT CASE WHEN SUM(INV4.RvsChrgPrc)!=0 
+                           THEN ((Case When OINV.DocCur = 'INR' Then  SUM(INV4.TaxSum) Else Sum(INV4.TaxSumFrgn) End) - (Case When OINV.DocCur = 'INR' Then SUM(INV4.RvsChrgTax) Else Sum(INV4.RvsChrgFC) End))
+                                  ELSE (Case When OINV.DocCur ='INR' Then  SUM(INV4.TaxSum) Else Sum(INV4.TaxSumFrgn) End) END  FROM INV4
+WHERE INV4.DOCENTRY = INV1.DOCENTRY AND   INV4.STATYPE = '-110' AND INV4.LINENUM=INV1.LINENUM AND INV4.RELATETYPE = 1),0)
+  AS CGSTAMNT,
+
+ISNULL((SELECT TOP 1 ISNULL(TAXRATE,0) FROM INV4 WHERE  INV4.DOCENTRY =  INV1.DOCENTRY AND INV4.STATYPE   IN ('-110','-150') AND INV4.RELATETYPE = 1 and INV4.LINENUM=INV1.LINENUM) ,0) AS SGSTRATE,  
+ISNULL((SELECT CASE WHEN SUM(INV4.RvsChrgPrc)!=0 
+                           THEN ((Case When OINV.DocCur = 'INR' Then  SUM(INV4.TaxSum) Else Sum(INV4.TaxSumFrgn) End) - (Case When OINV.DocCur = 'INR' Then SUM(INV4.RvsChrgTax) Else Sum(INV4.RvsChrgFC) End))
+                                  ELSE (Case When OINV.DocCur ='INR' Then  SUM(INV4.TaxSum) Else Sum(INV4.TaxSumFrgn) End) END  FROM INV4
+WHERE INV4.DOCENTRY = INV1.DOCENTRY AND   INV4.STATYPE IN ('-110','-150') AND INV4.LINENUM=INV1.LINENUM AND INV4.RELATETYPE = 1),0)
+  AS SGSTAMNT,
+
+ISNULL((SELECT TOP 1 ISNULL(TAXRATE,0) FROM INV4 WHERE  INV4.DOCENTRY =  INV1.DOCENTRY AND INV4.STATYPE   IN ('-120') AND INV4.RELATETYPE = 1
+AND INV4.LineNum = INV1.LineNum) ,0) AS IGSTRATE,   
+ISNULL((SELECT CASE WHEN SUM(INV4.RvsChrgPrc)!=0 THEN 
+       ((Case When OINV.DocCur = 'INR' Then  SUM(INV4.TaxSum) Else Sum(INV4.TaxSumFrgn) End) - (Case When OINV.DocCur = 'INR' Then SUM(INV4.RvsChrgTax) Else Sum(INV4.RvsChrgFC) End)) ELSE (Case When OINV.DocCur = 'INR' Then  SUM(INV4.TaxSum) Else Sum(INV4
+.TaxSumFrgn) End) END 
+
+FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY AND   INV4.STATYPE = '-120'AND INV4.LINENUM=INV1.LINENUM AND 
+INV4.RELATETYPE = 1),0) AS IGSTAMNT, 
+
+ISNULL((SELECT TOP 1 ISNULL(TAXRATE,0) FROM INV4 WHERE  INV4.DOCENTRY =  INV1.DOCENTRY AND INV4.STATYPE   IN ('8') AND INV4.RELATETYPE = 1
+AND INV4.LineNum = INV1.LineNum) ,0) AS TCSRATE,   
+ISNULL((SELECT CASE WHEN SUM(INV4.RvsChrgPrc)!=0 THEN 
+       ((Case When OINV.DocCur = 'INR' Then  SUM(INV4.TaxSum) Else Sum(INV4.TaxSumFrgn) End) - (Case When OINV.DocCur = 'INR' Then SUM(INV4.RvsChrgTax) Else Sum(INV4.RvsChrgFC) End)) ELSE (Case When OINV.DocCur = 'INR' Then  SUM(INV4.TaxSum) Else Sum(INV4
+.TaxSumFrgn) End) END 
+
+FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY AND   INV4.STATYPE = '8'
+--AND INV4.LINENUM=INV1.LINENUM
+ AND 
+INV4.RELATETYPE = 1),0) AS TCSAMNT, 
+
+
+ISNULL((SELECT OCST.NAME FROM OCST WHERE OCST.CODE = OCRD.STATE1 AND OCST.COUNTRY = 'IN'),'') 'STATE 1' ,
+ISNULL((SELECT Case When OINV.DocCur<>'INR' Then Sum(INV4.RvsChrgFC) Else SUM(INV4.RvsChrgPrc) End FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY),0) AS 'Reverse Charges',
+(CASE WHEN INV1.CURRENCY = 'INR' THEN ISNULL((SELECT SUM(INV4.RvsChrgTax) FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY AND INV4.staType in ('-100') ),0) 
+ELSE ISNULL((SELECT SUM(INV4.RvsChrgFC) FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY AND INV4.staType in ('-100') ),0)  END) AS 'Reverse CGST Tax', 
+
+(CASE WHEN INV1.CURRENCY = 'INR' THEN ISNULL((SELECT SUM(INV4.RvsChrgTax) FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY AND INV4.staType in ('-110','-150') ),0) 
+ELSE ISNULL((SELECT SUM(INV4.RvsChrgFC) FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY AND INV4.staType in ('-110','-150') ),0)  END) AS 'Reverse SGST Tax',
+
+(CASE WHEN INV1.CURRENCY = 'INR' THEN ISNULL((SELECT SUM(INV4.RvsChrgTax) FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY AND INV4.staType in ('-120') ),0) 
+ELSE ISNULL((SELECT SUM(INV4.RvsChrgFC) FROM INV4 WHERE INV4.DOCENTRY = INV1.DOCENTRY AND INV4.staType in ('-120') ),0)  END) AS 'Reverse IGST Tax',
+
+(SELECT OCHP.CHAPTERID FROM OCHP WHERE OCHP.ABSENTRY = --OITM.CHAPTERID
+
+inv1.HsnEntry )'TARIFF HEADING',  
+OINV.DOCDATE,OINV.DocCur ,
+
+OLCT.GSTREGNNO LOCTGSTREGNO,
+CRD1.GSTREGNNO, OCST.GSTCODE,OCST.Name ,OLCT.State,--t1.gstcode,
+OITM.SalUnitMsr,  
+(ISNULL(OLCT.STREET,'') +' '+ ISNULL(OLCT.BLOCK,'') +' '+ Convert(Varchar(Max),ISNULL(OLCT.Building,'')) +' '+ ISNULL(OLCT.CITY ,'')   
++' '+ ISNULL(OLCT.ZIPCODE,'') +' '+  ISNULL(OLCT.State,'') +' '+  case when ISNULL(OLCT.Country,'')='IN' THEN 'India' End ) AS ADDRESS,
+ISNULL(T1.Address2,'')+' '+ISNULL(T1.Address3,'')+' '+ISNULL(T1.STREET,'')+' '+ISNULL(T1.BLOCK,'')+' '+ISNULL(T1.CITY,'')+'-'+ISNULL(T1.ZipCode,'') AS 'BILL TO'  ,
+ISNULL(CRD1.Address2,'')+' '+ISNULL(CRD1.Address3,'')+' '+ISNULL(CRD1.STREET,'')+' '+ISNULL(CRD1.BLOCK,'')+' '+ISNULL(CRD1.CITY,'')+'-'+ISNULL(CRD1.ZipCode,'') AS 'SHIP TO'  ,
+(SELECT OCST.NAME FROM OCST WHERE OCST.CODE = OCRD.STATE2 AND OCST.COUNTRY = 'IN')STATE2,
+ISNULL((SELECT OCST.GSTCode  FROM OCST WHERE OCST.CODE = OCRD.State2 AND OCST.COUNTRY = 'IN'),'') 'GST CODE1',crd7.TaxId0,
+OINV.DocCur ,
+CASE WHEN ISNULL(INV1.DiscPrcnt ,0)=0 THEN 0 ELSE 
+((CASE WHEN  ISNULL(INV1.Quantity ,0)=0 THEN 1 ELSE   ISNULL(INV1.Quantity ,0) END) *
+(Case When OINV.DocCur = 'INR' Then ISNULL(INV1.PriceBefDi,0) Else ISNULL(INV1.PriceBefDi,0) End * ISNULL(INV1.DiscPrcnt,0)/100)) END 'Disc Amt',
+OINV.DiscPrcnt 'Header Disc Percent' 
+,Case When OINV.DocCur = 'INR' Then  OINV.DiscSum Else OINV.DiscSumFC End 'Header Disc Amt',Case When OINV.DocCur = 'INR' Then OINV.RoundDif Else OINV.RoundDifFC End As RoundDif,
+OINV.RevRefDate'Original Ref. Date' ,OINV.RevRefNo 'Original Ref. No.',ISNULL(OINV.Reserve ,'N') as Reserve
+,OINV.Comments,
+(Case When OINV.DocCur = 'INR' Then ISNULL(INV1.LineTotal,0) Else ISNULL(INV1.TotalFrgn,0) End)  -((Case When OINV.DocCur = 'INR' Then ISNULL(INV1.LineTotal,0) Else ISNULL(INV1.TotalFrgn,0) End)*(ISNULL(OINV.DiscPrcnt,0)/100))  AS 'Taxable Value',
+Case When OINV.DocCur='INR' Then OINV.DpmAmnt Else OINV.DpmAmntFC End 'Total Down Payment',OINV.DocDueDate 'Due Date',(Select Top 1 OCTG.PymntGroup   from OCTG WHERE OCTG.GroupNum=OCRD.GroupNum) 'Payment Terms',
+(Select Top 1 OCPR.Name   from OCPR WHERE OCPR.CardCode =CRD1.CardCode) 'Contact Name',
+(Select Top 1 OCPR.Cellolar   from OCPR WHERE OCPR.CardCode =CRD1.CardCode) 'Contact Mobile',
+(Select Top 1 OCPR.E_MailL   from OCPR WHERE OCPR.CardCode =CRD1.CardCode) 'Contact Email Id',
+OINV.NumAtCard 'Ref No',inv1.LineTotal, t1.Address 'ship to name', oinv.ShipToCode,INV1.VatSumSy, INV1.VatSum,
+ISNULL((Select TOP 1 ISNULL(INV4.StaCode,'') from INV4 WHERE INV4.DocEntry=OINV.DocEntry and INV4.staType in ('-110') AND INV4.RELATETYPE = 1),'') 'SGST',
+ISNULL((Select TOP 1 ISNULL(INV4.StaCode,'') from INV4 WHERE INV4.DocEntry=OINV.DocEntry and INV4.staType in ('-150') AND INV4.RELATETYPE = 1),'') 'UGST',
+OINV.Address 'Bill To Address',CRD1.city, T1.Building,inv26.ewaybillno,
+ISNULL((SELECT TOP 1 OCST.NAME FROM OCST WHERE OCST.CODE = OCRD.STATE1 AND OCST.COUNTRY = 'IN'),'') 'Bill To State',
+ISNULL((SELECT OCST.GSTCode  FROM OCST WHERE OCST.CODE = OCRD.STATE1 AND OCST.COUNTRY = 'IN'),'') 'GST CODE',NNM1.SeriesName as Series, 
+convert(varchar,OINV.TaxDate,103	) AS "Reference Date",convert(VARCHAR,OINV.CreateDate,103) AS "CREATE DATE",CRD1.COUNTRY,aa.TrnspName,OINV.U_Vehicle,INV1.SubCatNum as 'Part No', INV1.discprcnt as "Line Disc%",
+ Isnull((INV1.linetotal*INV1.discprcnt)/100,0) as "Discount Amt",NNM1.Remark as "S0", oinv.TotalExpFC, oinv.TotalExpns, INV3.VatSum,oinv.Address2,CRD1.GSTRegnNo
+
+,(Select Distinct AA.U_UTL_QRPT from [@UTL_MDEXTH] AA where AA.U_UTL_BaseEntry = oinv.DocEntry and AA.U_UTL_IST ='S' AND Isnull(AA.U_UTL_QRPT,'')<>'' group by AA.U_UTL_QRPT) [QR Code]
+,(Select Distinct AA.U_UTL_IRN from [@UTL_MDEXTH] AA where AA.U_UTL_BaseEntry = oinv.DocEntry and AA.U_UTL_IST ='S' AND Isnull(AA.U_UTL_QRPT,'')<>'' group by AA.U_UTL_IRN) [IRN No]
+,(Select Distinct AA.U_UTL_AckNo from [@UTL_MDEXTH] AA where AA.U_UTL_BaseEntry = oinv.DocEntry and AA.U_UTL_IST ='S' AND Isnull(AA.U_UTL_QRPT,'')<>'' group by AA.U_UTL_AckNo) [Ack no]
+,(Select Distinct AA.U_UTL_IRNGENDT from [@UTL_MDEXTH] AA where AA.U_UTL_BaseEntry = oinv.DocEntry and AA.U_UTL_IST ='S' AND Isnull(AA.U_UTL_QRPT,'')<>'' group by AA.U_UTL_IRNGENDT) [Ack dt]
+
+
+FROM     
+OINV INNER JOIN INV1 ON OINV.DOCENTRY=INV1.DOCENTRY 
+left outer join inv3 on OINV.DocEntry = inv3.DocEntry  
+LEFT OUTER JOIN OCRD   ON OINV.CARDCODE= OCRD.CARDCODE 
+LEFT OUTER JOIN CRD7 ON OINV.CARDCODE= CRD7.CARDCODE  AND CRD7.AddrType='S' AND CRD7.Address=OINV.ShipToCode
+LEFT OUTER JOIN CRD1 ON OINV.CARDCODE= CRD1.CARDCODE AND CRD1.AdresType='S' AND CRD1.Address=OINV.ShipToCode
+LEFT OUTER JOIN CRD1 T1 ON OINV.CARDCODE= T1.CARDCODE AND T1.AdresType='B' and T1.Address=OINV.PayToCode --PS (Pay from Ship)
+INNER JOIN OITM  ON OITM.ITEMCODE = INV1.ITEMCODE 
+LEFT OUTER JOIN OSHP  ON   OSHP.TRNSPCODE = OINV.TRNSPCODE 
+LEFT OUTER JOIN OLCT ON OLCT.CODE  =INV1.LOCCODE   
+LEFT OUTER JOIN  OCST ON OCST.CODE  =CRD1.STATE  AND OCST.COUNTRY = 'IN'
+LEFT OUTER JOIN OCRY ON OCRY.CODE   =crd1.COUNTRY   
+lEFT JOIN INV12 ON OINV.DOCENTRY = INV12.DOCENTRY 
+left join INV26 on oinv.docentry = inv26.docentry  
+left outer join  NNM1  on OINV.SERIES=NNM1.SERIES 
+LEFT JOIN OSHP AA ON AA.TrnspCode=OINV.TrnspCode
+
+
+WHERE  OINV.DOCENTRY = 3321
+
