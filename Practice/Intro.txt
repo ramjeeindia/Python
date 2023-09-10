@@ -74,10 +74,3 @@ oracle/javascripts
 Data is like a crude oil. We can define according to ypes of data and choose sturactural means a data like schema/dbo/ table like SQL, ORACLE types and non-structural like pdf, jpg				
 and semi structure means having schema but flow all types of data like facebook data , linkedin , whatsapp	
 
-========================merge conflit==================
-Hi This is added on github portal
-
-
-========== merge conflict===========
-
-This code is written on local system 
