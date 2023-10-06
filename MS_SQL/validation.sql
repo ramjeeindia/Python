@@ -2872,7 +2872,7 @@ IF @object_type = '1250000001' And @transaction_type IN ('A')
 	      END
 	   END
 ------------------------------------------------------------------------------------------------------------------	 
-	 IF @object_type = '1250000001' And @transaction_type IN ('U','L') 
+IF @object_type = '1250000001' And @transaction_type IN ('U','L') 
 
 	  BEGIN
 	    IF EXISTS (SELECT T0.ItemCode FROM WTQ1 T0 
