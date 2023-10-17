@@ -129,6 +129,7 @@ env.bak/
 venv.bak/
 #################### hear put local folder########################################################
 Extra/
+FlutterTutorial/
 Quiz
 
 # Spyder project settings
