@@ -30,7 +30,7 @@ SQL	- Structured Query Language
 Cloud				
 Ops	auto scaling				
 
-###############################################################################            	
+###########################################################################            	
 HDFS	Hadoop Distributed File System			
 GDFS	GOOGLE DISTRIBUTED FILE SYSTEM			
 GCP	Google Cloud Platform			
