@@ -1,0 +1,5 @@
+INFO:root:store a message
+INFO:root:store a message   ok 
+WARNING:root:This is my warning
+ERROR:root:This is the error
+CRITICAL:root:this is critical message

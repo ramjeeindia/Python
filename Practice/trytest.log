@@ -1,0 +1,15 @@
+2023-10-09 20:42:24,476- This is a start of my prog 
+2023-10-09 20:42:24,476- Asking user to enter age 
+2023-10-09 20:42:30,185- user has entered the age =37 
+2023-10-09 20:42:30,186- Valid user 
+2023-10-09 20:49:23,365- This is a start of my prog 
+2023-10-09 20:49:23,365- Asking user to enter age 
+2023-10-09 20:49:27,565- user has entered the age =37 
+2023-10-09 20:49:27,565- Valid user 
+2023-10-09 20:49:31,146- This is a start of my prog 
+2023-10-09 20:49:31,146- Asking user to enter age 
+2023-10-09 20:49:34,614- user has entered the age =47 
+2023-10-09 20:49:34,614- Valid user 
+2023-10-09 20:49:45,311- This is a start of my prog 
+2023-10-09 20:49:45,312- Asking user to enter age 
+2023-10-09 20:49:49,185- invalid literal for int() with base 10: 'ram' 
