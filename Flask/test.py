@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 
 # if we assign '/add' then url will be http://192.168.1.4:5000/add other http://192.168.1.4:5000
-@app.route('/add')
-# @app.route('/')
+# @app.route('/add')
+@app.route('/')
 def addition():
    return f"This is add mode Call"
 
